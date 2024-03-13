@@ -1,19 +1,19 @@
 import PropTypes from 'prop-types'
 
-const Notification = ({ message }) => {
+const SuccessNotification = ({ message }) => {
   if(message === null) {
     return null
   } else {
     return(
-      <div className='error'>
+      <div className='success'>
         {message}
       </div>
     )
   }
 }
 
-Notification.propTypes = {
+SuccessNotification.propTypes = {
   message: PropTypes.string,
 }
 
-export default Notification
+export default SuccessNotification

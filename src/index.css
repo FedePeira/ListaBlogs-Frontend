@@ -68,8 +68,50 @@ button:focus-visible {
   }
 }
 
-.note {
-  color: grey;
-  padding-top: 5px;
-  font-size: 15px;
+/* CSS Blog */
+.blog-item {
+ border: 1px solid #ccc;
+ margin: 10px 0;
+ padding: 10px;
+ border-radius: 5px;
+}
+
+.blog-title {
+ font-size: 1.2em;
+ font-weight: bold;
+}
+
+.blog-author {
+ font-size: 1em;
+ color: #666;
+}
+
+.blog-url {
+ font-size: 0.9em;
+ color: #333;
+}
+
+.blog-likes {
+ font-size: 0.8em;
+ color: #999;
+}
+
+.error {
+  color: red;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: green;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }

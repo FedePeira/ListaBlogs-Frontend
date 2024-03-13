@@ -1,32 +1,55 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-const NoteForm = ({ createNote }) => {
-  const [newNote, setNewNote] = useState('')
+const BlogForm = ({ createBlog }) => {
+  const [title,setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
-  const handleChange = (event) => {
-    setNewNote(event.target.value)
+  const handleChangeTitle = (event) => {
+    setTitle(event.target.value)
   }
 
-  const addNote = (event) => {
+  const handleChangeAuthor = (event) => {
+    setAuthor(event.target.value)
+  }
+
+  const handleChangeUrl = (event) => {
+    setUrl(event.target.value)
+  }
+
+  const addBlog = (event) => {
     event.preventDefault()
-    createNote({
-      content: newNote,
-      important: true
+    createBlog({
+      title: title,
+      author: author,
+      url: url,
+      likes: 0,
     })
 
-    setNewNote('')
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
 
   return (
     <div>
-      <h2>Create a new note</h2>
+      <h2>Create a new blog</h2>
 
-      <form onSubmit={addNote}>
+      <form onSubmit={addBlog} style={{ display: 'flex', flexDirection: 'column' }}>
         <input
-          value={newNote}
-          onChange={handleChange}
-          placeholder="Write note content here"
+          value={title}
+          onChange={handleChangeTitle}
+          placeholder="title..."
+        />
+        <input
+          value={author}
+          onChange={handleChangeAuthor}
+          placeholder="author..."
+        />
+        <input
+          value={url}
+          onChange={handleChangeUrl}
+          placeholder="url..."
         />
         <button type="submit">save</button>
       </form>
@@ -34,8 +57,4 @@ const NoteForm = ({ createNote }) => {
   )
 }
 
-NoteForm.propTypes = {
-  createNote: PropTypes.func.isRequired,
-}
-
-export default NoteForm
+export default BlogForm

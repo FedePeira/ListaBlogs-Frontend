@@ -5,15 +5,26 @@ import SuccessNotification from './components/SuccessNotification'
 import Footer from './components/Footer'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import User from './components/User'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blog'
 import loginService from './services/login'
+import userService from './services/users'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [showAll, setShowAll] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [users, setUsers] = useState([])
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -29,6 +40,19 @@ const App = () => {
       })
       console.log('All blogs inserted')
       setSuccessMessage('All Blogs inserted')
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 3000)
+  }, [])
+
+  useEffect(() => {
+    userService
+      .getAll()
+      .then(initialUsers => {
+        setUsers(initialUsers)
+      })
+      console.log('All users inserted')
+      setSuccessMessage('All Users inserted')
       setTimeout(() => {
         setSuccessMessage(null)
       }, 3000)
@@ -151,6 +175,8 @@ const App = () => {
       </div>
     )
   }
+  const name = 'Eduardo'
+  const count = 3
 
   return (
     <div>
@@ -169,12 +195,6 @@ const App = () => {
       </div>}
 
       <br/>
-
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all' }
-        </button>
-      </div>
       <ul>
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog
@@ -185,6 +205,29 @@ const App = () => {
         />
         )}
       </ul>
+      <h1>Users</h1>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                  
+              </TableCell>
+              <TableCell>
+                Blogs Created
+              </TableCell>
+            </TableRow>
+            {users.map(user =>
+              <User
+                id={user.id}
+                name={user.name}
+                count={user.blogs.length}
+              />
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
       <Footer/>
     </div>
   )

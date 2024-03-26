@@ -1,31 +1,30 @@
-import PropTypes from 'prop-types';
-import {
-  Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-} from '@mui/material'
+import { useParams } from "react-router-dom"
 
-const User = ({ id, name, count }) => {
+const User = ({ users }) => {
+  const id = useParams().id
+  const user = users.find(u => u.id === id)
+
+  console.log(id)
+  console.log(user)
+
+  if(!user) {
+    return null
+  }
+
   return (
-    <TableRow key={id}>
-      <TableCell>
-        {name}
-      </TableCell>
-      <TableCell>
-        {count}
-      </TableCell>
-    </TableRow>
+    <div>
+      <h3>{user.name}</h3>
+      <ul>
+        {user.blogs.map(blog => {
+          return(
+            <li key={blog.id}>
+              <p>{blog.title}</p>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }
-
-User.propTypes = {
-    id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  count: PropTypes.number.isRequired,
-};
 
 export default User

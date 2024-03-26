@@ -5,19 +5,12 @@ import SuccessNotification from './components/SuccessNotification'
 import Footer from './components/Footer'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-import User from './components/User'
+import Users from './components/Users'
+import Blogs from './components/Blogs'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blog'
 import loginService from './services/login'
 import userService from './services/users'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-} from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -52,10 +45,6 @@ const App = () => {
         setUsers(initialUsers)
       })
       console.log('All users inserted')
-      setSuccessMessage('All Users inserted')
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 3000)
   }, [])
 
   useEffect(() => {
@@ -175,8 +164,6 @@ const App = () => {
       </div>
     )
   }
-  const name = 'Eduardo'
-  const count = 3
 
   return (
     <div>
@@ -185,49 +172,19 @@ const App = () => {
       {successMessage && <SuccessNotification message={successMessage}/>}
 
       {!user && loginForm()}
-      {user && <div>
+      {user && 
+      <div>
         <p>{user.name} logged in</p>
         <Togglable buttonLabel='new blog' ref={blogFormRef}>
           <BlogForm
             createBlog={addBlog}
           />
         </Togglable>
+        <br/>
+        <Blogs blogs={blogs} addLikes={addLikes} deleteBlog={deleteBlog}/>
+        <h1>Users</h1>
+        <Users users={users}/>
       </div>}
-
-      <br/>
-      <ul>
-      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog
-            key={blog.id}
-            blog={blog}
-            addLikes={addLikes}
-            deleteBlog={deleteBlog}
-        />
-        )}
-      </ul>
-      <h1>Users</h1>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                  
-              </TableCell>
-              <TableCell>
-                Blogs Created
-              </TableCell>
-            </TableRow>
-            {users.map(user =>
-              <User
-                id={user.id}
-                name={user.name}
-                count={user.blogs.length}
-              />
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
       <Footer/>
     </div>
   )

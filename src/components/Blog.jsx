@@ -1,17 +1,24 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+import CommentForm from './CommentForm'
+import BlogItem from './BlogItem'
+import Comment from './Comment'
 
-const Blog = ({ blog, addLikes, deleteBlog }) => {
-  const [loginVisible, setLoginVisible] = useState(false)
+const Blog = ({ blogs, addLikes, deleteBlog, addComment }) => {
+  const [commentVisible, setCommentVisible] = useState(false)
 
-  const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-  const showWhenVisible = { display: loginVisible ? '' : 'none' }
-  
+  const [content, setContent] = useState('')
+
+  const id = useParams().id
+  const blog = blogs.find(b => b.id === id)
+
+  const showWhenVisibleComment = { display: commentVisible ? '' : 'none' }
+
   const handleChangeLike = async (event) => {
     event.preventDefault()
     console.log('---------------')
     console.log('Adding Like...')
-    addLikes({
+    const updatedBlog = await addLikes({
       id: blog.id,
       title: blog.title,
       author: blog.author,
@@ -24,7 +31,7 @@ const Blog = ({ blog, addLikes, deleteBlog }) => {
   const handleChangeDelete = async (event) => {
     event.preventDefault()
     console.log('---------------')
-    console.log('Adding Like...')
+    console.log('Deleting...')
     deleteBlog({
       id: blog.id,
       title: blog.title,
@@ -35,41 +42,41 @@ const Blog = ({ blog, addLikes, deleteBlog }) => {
     })
   }
 
+  const handleSubmitComment = async (event) => {
+    event.preventDefault()
+    console.log('---------------')
+    console.log('Adding comment...')
+    const id = blog.id
+    if (content) {
+      addComment({ content, id });
+      setContent('');
+   }
+    
+  } 
+
   return (
     <div>
-      <div className="blog-item" style={hideWhenVisible}>
-        <div className="blog-title">{blog.title}</div>
-        <button onClick={() => setLoginVisible(true)}>More</button>
+        <BlogItem
+          blog={blog}
+          handleChangeLike={handleChangeLike}
+          handleChangeDelete={handleChangeDelete}
+          handleChangeVisibilityComment={() => setCommentVisible(true)}
+        />
+
+      <div style={showWhenVisibleComment}>
+        <CommentForm 
+          content={content}
+          handleSubmit={handleSubmitComment}
+          handleContentChange={({ target }) => setContent(target.value)}/>
       </div>
-      <div className="blog-item" style={showWhenVisible}>
-        <div className="blog-title">{blog.title}</div>
-        <div className="blog-author">{blog.author}</div>
-        <div className="blog-url">
-          <a href={blog.url} target="_blank" rel="noopener noreferrer">
-            {blog.url}
-          </a>
-        </div>
-        <div className="blog-likes">{blog.likes} likes</div>
-        <button onClick={handleChangeLike}>Like</button>
-        <button onClick={handleChangeDelete}>Delete</button>
-        <button onClick={() => setLoginVisible(false)}>Hide</button>
-      </div>
+
+      <h3>Comments</h3>
+      <Comment
+        blog={blog}
+      />
     </div>
     
   )
 }
-
-Blog.propTypes = {
-  blog: PropTypes.shape({
-     id: PropTypes.string.isRequired,
-     title: PropTypes.string.isRequired,
-     author: PropTypes.string.isRequired,
-     url: PropTypes.string.isRequired,
-     likes: PropTypes.number.isRequired,
-     user: PropTypes.string,
-  }).isRequired,
-  addLikes: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
-};
 
 export default Blog

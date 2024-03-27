@@ -1,21 +1,59 @@
-import Blog from './Blog'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from '@mui/material'
+import {
+  Link
+} from "react-router-dom"
 import PropTypes from 'prop-types'
+import { useRef } from 'react'
+import Togglable from './Togglable'
+import BlogForm from './BlogForm'
 
-const Blogs = ({ blogs, addLikes, deleteBlog }) => {
-  console.log(blogs)
+const Blogs = ({ blogs, addBlog }) => {
+
+  const blogFormRef = useRef()
 
   return (
     <div>
-      <ul>
-        {blogs && blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            addLikes={addLikes}
-            deleteBlog={deleteBlog}
-          />
-        )}
-      </ul>
+      <h1>Blogs</h1>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
+        <BlogForm
+          createBlog={addBlog}
+        />
+      </Togglable>
+      <TableContainer component={Paper}>
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                                
+                </TableCell>
+                <TableCell>
+                  Blog Author
+                </TableCell>
+              </TableRow>
+
+              {blogs.map(blog =>
+                <TableRow key={blog.id}>
+                  <TableCell>
+                    <Link to={`/blogs/${blog.id}`}>
+                      {blog.title}
+                    </Link>          
+                  </TableCell>
+                  <TableCell>
+                    {blog.author}
+                  </TableCell>
+                </TableRow>
+              )}
+
+            </TableBody>
+          </Table>
+        </TableContainer>
     </div>
   )
 }
@@ -23,16 +61,14 @@ const Blogs = ({ blogs, addLikes, deleteBlog }) => {
 Blogs.propTypes = {
  blogs: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       author: PropTypes.string.isRequired,
-      ulr: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired,
       likes: PropTypes.number.isRequired,
-      user: PropTypes.string.isRequired, 
+      user: PropTypes.object.isRequired, 
     })
- ),
- addLikes: PropTypes.func.isRequired,
- deleteBlog: PropTypes.func.isRequired,
+ )
 };
 
 export default Blogs

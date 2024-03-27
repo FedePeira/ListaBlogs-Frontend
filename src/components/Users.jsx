@@ -7,17 +7,13 @@ import {
   Paper,
 } from '@mui/material'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link
+  Link
 } from "react-router-dom"
 
-import User from './User'
-
 const Users = ({ users }) => {
-
   return (
     <div>
-      <Router> 
+        <h1>Users</h1>
         <TableContainer component={Paper}>
           <Table>
             <TableBody>
@@ -29,6 +25,7 @@ const Users = ({ users }) => {
                   Blogs Created
                 </TableCell>
               </TableRow>
+
               {users.map(user =>
                 <TableRow key={user.id}>
                   <TableCell>
@@ -41,14 +38,10 @@ const Users = ({ users }) => {
                   </TableCell>
                 </TableRow>
               )}
+
             </TableBody>
           </Table>
         </TableContainer>
-        
-        <Routes>
-          <Route path="/users/:id" element={<User users={users}/>} />
-        </Routes>
-      </Router>
     </div>
   )
 }

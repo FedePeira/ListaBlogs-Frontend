@@ -1,29 +1,45 @@
+// Hooks
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+
+// Notification
 import ErrorNotification from './components/ErrorNotification'
 import SuccessNotification from './components/SuccessNotification'
+
+// Components
 import Footer from './components/Footer'
-import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
-import Users from './components/Users'
-import Blogs from './components/Blogs'
+
+// Forms
 import LoginForm from './components/LoginForm'
+
+// Blog y User
+import Users from './components/Users'
+import User from './components/User'
+import Blogs from './components/Blogs'
+import Blog from './components/Blog'
+
+// Service
 import blogService from './services/blog'
 import loginService from './services/login'
 import userService from './services/users'
 
+// React Router
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from "react-router-dom"
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [showAll, setShowAll] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
   const [users, setUsers] = useState([])
   const [user, setUser] = useState(null)
+
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+ 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [loginVisible, setLoginVisible] = useState(false)
 
-  const blogFormRef = useRef()
+  const [loginVisible, setLoginVisible] = useState(false)
 
   useEffect(() => {
     blogService
@@ -31,7 +47,6 @@ const App = () => {
       .then(initialBlogs => {
         setBlogs(initialBlogs)
       })
-      console.log('All blogs inserted')
       setSuccessMessage('All Blogs inserted')
       setTimeout(() => {
         setSuccessMessage(null)
@@ -44,25 +59,20 @@ const App = () => {
       .then(initialUsers => {
         setUsers(initialUsers)
       })
-      console.log('All users inserted')
   }, [])
 
   useEffect(() => {
     const loggedUserJSON = null
-    console.log('----------------')
-    console.log('Token:', loggedUserJSON)
+
     if(loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
-      console.log('------------------')
-      console.log('User token:', user.token)
-      console.log('------------------')
+      commentService.setToken(user.token)
     }
   }, [])
 
   const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
     console.log('--------------------')
     console.log('Blog: ', blogObject)
     blogService
@@ -78,8 +88,24 @@ const App = () => {
       })
   }
 
-  const addLikes = (blogObject) => {
+  const addComment = (commentObject) => {
+    console.log('--------------------')
+    console.log('Comment: ', commentObject)
+    
     blogService
+      .createComment(commentObject)
+      .then(() => {
+        console.log('--------------------')
+        console.log('Comment added to blog')
+        setSuccessMessage('Comment added')
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 3000)
+      })
+  }
+
+  const addLikes = (blogObject) => {
+    return blogService
       .updateBlog(blogObject.id, blogObject)
       .then(returnedBlog => {
         console.log('--------------------')
@@ -88,6 +114,7 @@ const App = () => {
         setTimeout(() => {
           setSuccessMessage(null)
         }, 3000)
+        return returnedBlog
       })
   }
 
@@ -104,12 +131,6 @@ const App = () => {
       })
   }
 
-  /*
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
-  }
-  */
-
   const handleLogin = async (event) => {
     event.preventDefault()
     console.log('---------------')
@@ -119,17 +140,19 @@ const App = () => {
       const user = await loginService.login({
         username, password
       })
+
       alert('Log in successfull')
       setSuccessMessage('Log in successfull')
       setTimeout(() => {
         setSuccessMessage(null)
       }, 3000)
+
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
       )
-      console.log('----------------')
-      console.log('Token: ', user.token)
+
       blogService.setToken(user.token)
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -142,12 +165,32 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    console.log('---------------')
+    console.log('logging out')
+
+    setUser(null)
+    setUsername('')
+    setPassword('')
+
+    window.localStorage.removeItem('loggedNoteappUser')
+
+    blogService.setToken(null)
+
+    alert('Log out successfull')
+    setSuccessMessage('Log out successful')
+    setTimeout(() => {
+        setSuccessMessage(null)
+    }, 3000);
+  }
+  
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }
     const showWhenVisible = { display: loginVisible ? '' : 'none' }
 
     return (
       <div>
+        <h1>Login</h1>
         <div style={hideWhenVisible}>
           <button onClick={() => setLoginVisible(true)}>Login</button>
         </div>
@@ -165,26 +208,42 @@ const App = () => {
     )
   }
 
+  const padding = {
+    padding: 5
+  }
+
   return (
     <div>
-      <h1>Blogs</h1>
-      {errorMessage && <ErrorNotification message={errorMessage}/>}
-      {successMessage && <SuccessNotification message={successMessage}/>}
+      <Router>
+          {errorMessage && <ErrorNotification message={errorMessage}/>}
+          {successMessage && <SuccessNotification message={successMessage}/>}
 
-      {!user && loginForm()}
-      {user && 
-      <div>
-        <p>{user.name} logged in</p>
-        <Togglable buttonLabel='new blog' ref={blogFormRef}>
-          <BlogForm
-            createBlog={addBlog}
-          />
-        </Togglable>
-        <br/>
-        <Blogs blogs={blogs} addLikes={addLikes} deleteBlog={deleteBlog}/>
-        <h1>Users</h1>
-        <Users users={users}/>
-      </div>}
+          {!user && loginForm()}
+
+          {user && 
+            <div>
+              <div>
+                <Link style={padding} to="/blogs">Blogs</Link>
+                <Link style={padding} to="/users">Users</Link>
+                {user ? 
+                  <div>
+                    <em>{user.name} logged in</em> <button onClick={handleLogout}>log out</button>
+                  </div>
+                  : <Link style={padding} to="/login">login</Link>
+                }
+              </div>
+
+              <Routes>
+                <Route path="/blogs" element={<Blogs blogs={blogs} addBlog={addBlog}/>} />
+                <Route path="/users" element={<Users users={users} />} />
+
+                <Route path="/blogs/:id" element={<Blog blogs={blogs} addLikes={addLikes} deleteBlog={deleteBlog} addComment={addComment}/>}/>
+                <Route path="/users/:id" element={<User users={users}/>} />
+              </Routes>
+            </div>
+          }
+      </Router>
+
       <Footer/>
     </div>
   )

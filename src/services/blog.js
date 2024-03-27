@@ -63,6 +63,23 @@ const deleteBlog = (id, newObject) => {
   return request.then(response => response.data)
 }
 
+const createComment = (commentObject) => {
+  console.log('---------------------');
+  console.log('Creating Comment...');
+  console.log('Comment: ', commentObject);
+
+  const url = `${baseUrl}/${commentObject.id}/comments`;
+
+  console.log('Url: ', url)
+  const config = {
+      headers: { Authorization: token },
+  };
+
+  const request = axios.post(url, commentObject, config);
+  console.log(request)
+  return request.then(response => response.data)
+}
+
 export default {
-  getAll, createBlog, updateBlog, setToken, deleteBlog
+  getAll, createBlog, updateBlog, setToken, deleteBlog, createComment
 }
